@@ -1,11 +1,14 @@
 import { Metadata } from "next";
 
+import Calendar from "@/components/CalendarWidget";
+import TagWidget from "@/components/TagWidget";
 import MainNav from "@/components/navigation/MainNav";
 import UserNav from "@/components/navigation/UserNav";
 import CalendarBoard from "@/components/calendar/CalendarBoard";
 import MonitorBoard from "@/components/travel-monitor/MonitorBoard";
 import TagBoard from "@/components/tag/TagBoard";
 import TrackRouteBoard from "@/components/track-route/TrackRouteBoard";
+import GlobalProvider from "@/components/providers/GlobalStateProvider";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -14,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function DashboardPage() {
   return (
-    <>
+    <GlobalProvider>
       <div className="flex flex-col">
         <div className="border-b">
           <div className="flex h-16 items-center px-4">
@@ -43,6 +46,6 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-    </>
+    </GlobalProvider>
   );
 }
