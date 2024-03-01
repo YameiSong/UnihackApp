@@ -1,7 +1,5 @@
 import { Metadata } from "next";
 
-import Calendar from "@/components/CalendarWidget";
-import TagWidget from "@/components/TagWidget";
 import MainNav from "@/components/navigation/MainNav";
 import UserNav from "@/components/navigation/UserNav";
 import CalendarBoard from "@/components/calendar/CalendarBoard";
