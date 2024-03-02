@@ -1,4 +1,7 @@
-import React from "react";
+"use client";
+
+import React, { useEffect } from "react";
+import { useGlobalContext } from "../providers/GlobalStateProvider";
 
 import {
   Card,
@@ -12,35 +15,55 @@ import MonitorItem from "./MonitorItem";
 
 const monitorItemsData = [
   {
+    stopId: 0,
     departureAddress: "Home",
     arrivalAddress: "School",
     date: "27th Feb",
-    arrivalTime: "10:00",
+    expectedArrivalTime: "10:00",
+    transportMode: "Bus",
   },
   {
+    stopId: 0,
     departureAddress: "Home",
-    arrivalAddress: "Work",
+    arrivalAddress: "School",
     date: "27th Feb",
-    arrivalTime: "12:00",
+    expectedArrivalTime: "10:00",
+    transportMode: "Bus",
   },
   {
+    stopId: 0,
     departureAddress: "Home",
-    arrivalAddress: "Gym",
-    date: "28th Feb",
-    arrivalTime: "15:00",
+    arrivalAddress: "School",
+    date: "27th Feb",
+    expectedArrivalTime: "10:00",
+    transportMode: "Bus",
   },
 ];
 
 const MonitorBoard = () => {
+  // const [monitorItems, setMonitorItems] = React.useState(monitorItemsData);
+  const { travelPlans, setTravelPlans } = useGlobalContext();
+
+  useEffect(() => {
+    //call api
+    setTravelPlans(monitorItemsData);
+  }, []);
+
   return (
     <Card className="min-h-[170px] shadow-md">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-lg font-bold">Weekly Monitor</CardTitle>
+        <CardTitle className="text-lg font-bold">Travel Plans</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col space-y-2 max-h-[100px] overflow-y-auto">
-          {monitorItemsData.map((item, index) => (
-            <MonitorItem key={index} {...item} />
+          {travelPlans.map((item, index) => (
+            <MonitorItem
+              key={index}
+              arrivalAddress={item.arrivalAddress}
+              departureAddress={item.departureAddress}
+              date={item.date}
+              expectedArrivalTime={item.expectedArrivalTime}
+            />
           ))}
         </div>
       </CardContent>
