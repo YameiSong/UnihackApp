@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Tag, User, TravelPlan
+from .models import Tag, User, TravelPlan, Ridesharing
 from .serializers import TagSerializer, RideSharingSerializer, TravelPlanSerializer
 from .transport_api import TransportAPI
 from typing import List
@@ -79,15 +79,13 @@ def getRoutes(request):
 
 @api_view(['PUT', 'DELETE', 'GET'])
 def handleTag(request):
-    body = request.data
-
     if request.method == 'GET':
         tags: List[Tag] = Tag.objects.all()
         serializer = TagSerializer(tags, many=True)
         return Response(serializer.data)
 
     if request.method == 'PUT':
-        serializer = TagSerializer(data=body)
+        serializer = TagSerializer(data=request.data)
 
         if serializer.is_valid():
             tag:Tag = serializer.create(serializer.validated_data)
@@ -97,7 +95,7 @@ def handleTag(request):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     if request.method == 'DELETE':
-        tagName = body['tagName']
+        tagName = request.data.get('tagName')
         tag = Tag.objects.get(tag_name=tagName)
         tag.delete()
         return Response(f'Tag {tagName} was deleted')
@@ -105,8 +103,13 @@ def handleTag(request):
 @api_view(['GET', 'POST'])
 def handleTravelPlan(request):
     if request.method == 'GET':
-        user_id = request.data.get('userID')
-        travel_plans: List[TravelPlan] = TravelPlan.objects.filter(user_id=user_id)
+        user_id = request.GET.get('userID')
+        # get user
+        try:
+            user = User.objects.get(user_id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        travel_plans: List[TravelPlan] = TravelPlan.objects.filter(user_id=user)
         serializer = TravelPlanSerializer(travel_plans, many=True)
         return Response(serializer.data)
 
@@ -126,7 +129,7 @@ def handleTravelPlan(request):
 
         # get user
         try:
-            user = User.objects.get(id=user_id)
+            user = User.objects.get(user_id=user_id)
         except User.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -149,14 +152,18 @@ def handleTravelPlan(request):
 
 @api_view(['GET'])
 def handleTrip(request):
-    body = request.data
-    userID = body['userID']
-    travel_plans: List[TravelPlan] = TravelPlan.objects.filter(user_id=userID)
+    userID = request.GET.get('userID')
+    # get user
+    try:
+        user = User.objects.get(user_id=userID)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+    travel_plans: List[TravelPlan] = TravelPlan.objects.filter(user_id=user)
     trips = []
     for travel_plan in travel_plans:
         info = transapi.query_trip(travel_plan.departure_stop_id, 
                             travel_plan.arrival_stop_id, 
-                            travel_plan.expected_arrival_time.strftime('%H%M'))
+                            travel_plan.expected_arrival_time)
         trip = {}
         trip['timeToDeparturePlatform'] = travel_plan.time_to_departure_platform
         trip['journeys'] = []
@@ -176,18 +183,24 @@ def handleTrip(request):
             }
             trip['journeys'].append(cleared_journey)
         trips.append(trip)
-    return JsonResponse(trips)
+
+        info = Ridesharing.objects.last()
+        serializer = RideSharingSerializer(info, many=False)
+    return JsonResponse({
+        'trips': trips,
+        'rideSharing': serializer.data
+        })
 
 @api_view(['GET'])
 def handleLogin(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
+    username = request.GET.get('username')
+    password = request.GET.get('password')
     request.session['username'] = username
     try:
         user = User.objects.get(username=username,password=password)
         return JsonResponse({
             'status': 'success',
-            'userID': user.pk
+            'userID': user.user_id
             })
     except User.DoesNotExist:
         return JsonResponse({
@@ -197,9 +210,10 @@ def handleLogin(request):
 
 @api_view(['PUT'])
 def HandleRideShaing(request):
-    body = request.data
-    serializer = RideSharingSerializer(data=body)
-    if serializer.is_valid():
-        sharing = serializer.create(serializer.validated_data)
-        sharing.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    if request.method == 'PUT':
+        body = request.data
+        serializer = RideSharingSerializer(data=body)
+        if serializer.is_valid():
+            sharing = serializer.create(serializer.validated_data)
+            sharing.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
