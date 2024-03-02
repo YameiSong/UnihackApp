@@ -4,7 +4,7 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { useRef, useState } from "react";
 import { useGlobalContext } from "../providers/GlobalStateProvider";
-import Tag from "../tag/Tag";
+import ITag from "@/types/ITag";
 
 import { format } from "date-fns";
 
@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
+import Tag from "../tag/Tag";
 
 const CalendarBoard = () => {
   const {
@@ -50,17 +51,11 @@ const CalendarBoard = () => {
   } = useGlobalContext();
 
   const [openDepartureTagChoices, setOpenDepartureTagChoices] = useState(false);
-  const [departureTagChoice, setDepartureTagChoice] = useState<{
-    value: string;
-    address: string;
-  }>();
+  const [departureTagChoice, setDepartureTagChoice] = useState<ITag>();
 
   const [openDestinationTagChoices, setOpenDestinationTagChoices] =
     useState(false);
-  const [destinationTagChoice, setDestinationTagChoice] = useState<{
-    value: string;
-    address: string;
-  }>();
+  const [destinationTagChoice, setDestinationTagChoice] = useState<ITag>();
 
   const dialogTriggerRef = useRef<HTMLButtonElement>(null);
   const addTagTimeTimeRef = useRef<HTMLInputElement>(null);
@@ -90,16 +85,7 @@ const CalendarBoard = () => {
 
     //call api
     try {
-      const travelPlan = {
-        stopId: 0,
-        date: format(selectedDate, "dd MMM yyyy"),
-        expectedArrivalTime: format(selectedDate, "HH:mm"),
-        departureAddress: tagTime.departureTag?.address || "",
-        arrivalAddress: tagTime.destinationTag?.address || "",
-        transportMode: "Bus",
-      };
-
-      setTravelPlans([...travelPlans, travelPlan]);
+      // setTravelPlans([...travelPlans, travelPlan]);
     } catch (error) {
       console.log(error);
     }
@@ -148,7 +134,7 @@ const CalendarBoard = () => {
                   >
                     {departureTagChoice ? (
                       <Tag
-                        value={departureTagChoice.value}
+                        tag_name={departureTagChoice.tag_name}
                         backgroundColour={
                           tagColours[
                             tags.indexOf(departureTagChoice) % tagColours.length
@@ -199,8 +185,8 @@ const CalendarBoard = () => {
                     <CommandGroup>
                       {tags.map((tag, index) => (
                         <CommandItem
-                          key={tag.value}
-                          value={tag.value}
+                          key={tag.id}
+                          value={tag.tag_name}
                           onSelect={() => {
                             setDepartureTagChoice(tag);
                             setOpenDepartureTagChoices(false);
@@ -208,7 +194,7 @@ const CalendarBoard = () => {
                         >
                           <div className="flex items-center space-x-2">
                             <Tag
-                              value={tag.value}
+                              tag_name={tag.tag_name}
                               key={index}
                               backgroundColour={
                                 tagColours[index % tagColours.length]
@@ -243,7 +229,7 @@ const CalendarBoard = () => {
                   >
                     {destinationTagChoice ? (
                       <Tag
-                        value={destinationTagChoice.value}
+                        tag_name={destinationTagChoice.tag_name}
                         backgroundColour={
                           tagColours[
                             tags.indexOf(destinationTagChoice) %
@@ -295,8 +281,8 @@ const CalendarBoard = () => {
                     <CommandGroup>
                       {tags.map((tag, index) => (
                         <CommandItem
-                          key={tag.value}
-                          value={tag.value}
+                          key={tag.id}
+                          value={tag.tag_name}
                           onSelect={() => {
                             setDestinationTagChoice(tag);
                             setOpenDestinationTagChoices(false);
@@ -304,7 +290,7 @@ const CalendarBoard = () => {
                         >
                           <div className="flex items-center space-x-2">
                             <Tag
-                              value={tag.value}
+                              tag_name={tag.tag_name}
                               key={index}
                               backgroundColour={
                                 tagColours[index % tagColours.length]

@@ -11,7 +11,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import MonitorItem from "./TravelPlanItem";
+import TravelPlanItem from "./TravelPlanItem";
+import { format } from "date-fns";
 
 const travelPlanItemsData = [
   {
@@ -41,13 +42,7 @@ const travelPlanItemsData = [
 ];
 
 const TravelPlanBoard = () => {
-  // const [monitorItems, setMonitorItems] = React.useState(travelPlanItemsData);
   const { travelPlans, setTravelPlans } = useGlobalContext();
-
-  useEffect(() => {
-    //call api
-    setTravelPlans(travelPlanItemsData);
-  }, []);
 
   return (
     <Card className="min-h-[170px] shadow-md">
@@ -57,12 +52,16 @@ const TravelPlanBoard = () => {
       <CardContent>
         <div className="flex flex-col space-y-2 max-h-[100px] overflow-y-auto">
           {travelPlans.map((item, index) => (
-            <MonitorItem
+            <TravelPlanItem
               key={index}
-              arrivalAddress={item.arrivalAddress}
-              departureAddress={item.departureAddress}
-              date={item.date}
-              expectedArrivalTime={item.expectedArrivalTime}
+              user_id={item.user_id}
+              date={format(new Date(item.date), "do MMM yyyy")}
+              expected_arrival_time={format(
+                new Date(item.expected_arrival_time),
+                "HH:mm"
+              )}
+              departure_address={item.departure_address}
+              arrival_address={item.arrival_address}
             />
           ))}
         </div>

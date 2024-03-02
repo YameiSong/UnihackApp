@@ -11,7 +11,8 @@ import {
 } from "@/components/ui/card";
 import SharedRiding from "./ShareRiding";
 import Route from "./Route";
-import TravelMonitor from "@/types/TravelMonitor";
+import ITravelMonitor from "@/types/ITravelMonitor";
+import axiosInstance from "@/lib/axiosConfig";
 
 const suggestedRoutes = [
   {
@@ -35,12 +36,15 @@ const suggestedRoutes = [
 ];
 
 const TrackRouteBoard = () => {
-  const [travelMonitor, setTravelMonitor] = useState<TravelMonitor>();
+  const [travelMonitor, setTravelMonitor] = useState<ITravelMonitor>();
 
   useEffect(() => {
     try {
       //call api to fetch today's monitor
-      const fetchTodayMonitor = async () => {};
+      const fetchTodayMonitor = async () => {
+        const res = await axiosInstance.get("/trip?userID=1");
+        console.log(res.data);
+      };
       fetchTodayMonitor();
     } catch (error) {
       console.log(error);
@@ -92,7 +96,7 @@ const TrackRouteBoard = () => {
             <CardContent>
               <div className="space-y-2">
                 {!travelMonitor && (
-                  // handle case when no travel plans for today here
+                  // handle case when no travel plans for today here, display no suggested route available
                   <div></div>
                   // <div className="flex items-center justify-center h-[100px]">
                   //   No suggested route available
