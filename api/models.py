@@ -1,22 +1,25 @@
 from django.db import models
 
 class User(models.Model):
+    user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
     email = models.EmailField()
 
 class TravelPlan(models.Model):
-    stop_id = models.IntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateTimeField()
     event_name = models.CharField(max_length=100)
     expected_arrival_time = models.DateTimeField()
+    time_to_departure_platform = models.IntegerField()  # unit: minute
     departure_address = models.CharField(max_length=255)
+    departure_stop_id = models.IntegerField()
     arrival_address = models.CharField(max_length=255)
+    arrival_stop_id = models.IntegerField()
     transport_mode = models.CharField(max_length=100)
 
 class Tag(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     tag_name = models.CharField(max_length=100)
     address = models.CharField(max_length=255)
 
