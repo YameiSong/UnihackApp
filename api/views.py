@@ -47,10 +47,11 @@ def getRoutes(request):
 
     return Response(routes)
 
-@api_view
+@api_view(['PUT', 'DELETE'])
 def handleTag(request):
+    body = request.data
+
     if request.method == 'PUT':
-        body = request.data
         serializer = TagSerializer(data=body)
 
         if serializer.is_valid():
@@ -58,4 +59,22 @@ def handleTag(request):
             tag.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    if request.method == 'DELETE':
+        tagName = body['tagName']
+        tag = Tag.objects.get(tag_name=tagName)
+        tag.delete()
+        return Response(f'Tag {tagName} was deleted')
+
+@api_view(['POST'])
+def handleTravelPlan(request):
+    pass
+
+@api_view(['GET'])
+def handleTrip(request):
+    pass
+
+@api_view(['GET'])
+def handleLogin(request):
+    pass
