@@ -1,5 +1,6 @@
 "use client";
 import React, { useContext, useState } from "react";
+import TravelPlan from "@/types/TravelPlan";
 
 interface GlobalContextProps {
   tagTimes: [];
@@ -10,6 +11,10 @@ interface GlobalContextProps {
   }[];
   setTags: (tags: { value: string; address: string }[]) => void;
   tagColours: string[];
+
+  //travel plans
+  travelPlans: TravelPlan[];
+  setTravelPlans: (travelPlans: TravelPlan[]) => void;
 }
 
 const GlobalContext = React.createContext<GlobalContextProps>({
@@ -18,6 +23,9 @@ const GlobalContext = React.createContext<GlobalContextProps>({
   tags: [{ value: "home", address: "1234 home street" }],
   setTags: () => {},
   tagColours: ["#B7DDF9", "#ECCBF4", "#CBF4EA", "#E2FA7F"],
+
+  travelPlans: [],
+  setTravelPlans: () => {},
 });
 
 export const useGlobalContext = () => {
@@ -31,8 +39,13 @@ const GlobalProvider = ({ children }: any) => {
       value: string;
       address: string;
     }[]
-  >([{ value: "home", address: "1234 home street" }]);
+  >([
+    { value: "home", address: "1234 home street" },
+    { value: "school", address: "1234 school street" },
+  ]);
   const tagColours = ["#B7DDF9", "#ECCBF4", "#CBF4EA", "#E2FA7F"];
+
+  const [travelPlans, setTravelPlans] = useState<TravelPlan[]>([]);
 
   /**
    * A TagTime is described as follows:
@@ -57,7 +70,15 @@ const GlobalProvider = ({ children }: any) => {
 
   return (
     <GlobalContext.Provider
-      value={{ tagTimes, setTagTimes, tags, setTags, tagColours }}
+      value={{
+        tagTimes,
+        setTagTimes,
+        tags,
+        setTags,
+        tagColours,
+        travelPlans,
+        setTravelPlans,
+      }}
     >
       {children}
     </GlobalContext.Provider>
