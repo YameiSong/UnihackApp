@@ -107,9 +107,8 @@ def handleTravelPlan(request):
     # Create a TravelPlan object and save it to the database
     travel_plan = TravelPlan.objects.create(
         user=user,
-        date=timezone.now(),
         event_name='',
-        expected_arrival_time=datetime.datetime.strptime(arrival_time, '%H:%M'),
+        expected_arrival_time=datetime.strptime(arrival_time, '%H:%M'),
         time_to_departure_platform=10,
         departure_address=origin_station_name,
         departure_stop_id='',
@@ -117,6 +116,8 @@ def handleTravelPlan(request):
         arrival_stop_id='',  
         transport_mode=''  
     )
+
+    travel_plan.save()
 
     return Response({'message': 'Travel plan created successfully'}, status=status.HTTP_201_CREATED)
 
