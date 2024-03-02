@@ -11,12 +11,12 @@ class TravelPlanSerializer(ModelSerializer):
         model = TravelPlan
         fields = ALL_FIELDS
 
-class TripPlanSerializer(ModelSerializer):
+class TripSerializer(ModelSerializer):
     class Meta:
         model = Trip
         fields = ALL_FIELDS
 
 class UserSerializer(ModelSerializer):
     class Meta:
-        model = Trip
+        model = User
         fields = ALL_FIELDS
