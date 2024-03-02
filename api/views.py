@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Tag
-from .serializers import TagSerializer
+from .models import Tag, User
+from .serializers import TagSerializer, RideSharingSerializer
 from .transport_api import TransportAPI
 
 transapi = TransportAPI()
@@ -80,4 +80,19 @@ def handleTrip(request):
 
 @api_view(['GET'])
 def handleLogin(request):
-    pass
+    username = request.data.get('username')
+    password = request.data.get('password')
+    request.session['username'] = username
+    if User.objects.filter(username=username,password=password).exists():
+        return Response('false')
+    else:
+        return Response('success')
+
+@api_view('PUT')
+def HandleRideShaing(request):
+    body = request.data
+    serializer = RideSharingSerializer(data=body)
+    if serializer.is_valid():
+        sharing = serializer.create(serializer.validated_data)
+        sharing.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
