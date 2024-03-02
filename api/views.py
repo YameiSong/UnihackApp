@@ -1,26 +1,84 @@
-from urllib import request
-from django.shortcuts import render, redirect
-from docutils.nodes import status
-
-from .forms import UserForm
-from .models import TravelPlan, Tag
-from django.http import HttpResponse
-from django.utils import timezone
-from transport_api import TransportAPI
+from django.shortcuts import render
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import TravelPlanSerializer, RideSharingSerializer
+from .models import Tag, User
+from .serializers import TagSerializer, RideSharingSerializer
+from .transport_api import TransportAPI
 
-api = TransportAPI()
-origin_stop_id = api.query_stop('Redfern') # string
-destination_stop_id = api.query_stop('Randwick') # string
-arrival_time = '2200' # HHMM format string
-trip = api.query_trip(origin_stop_id, destination_stop_id, arrival_time) # dict
+transapi = TransportAPI()
 
 # Create your views here.
+@api_view(['GET'])
+def getRoutes(request):
+    routes = [
+        {
+            'Endpoint': '/tag/',
+            'method': 'PUT',
+            'body': {
+                'tagName': 'string',
+                'address': 'string',
+                'username': 'string',
+                     },
+            'description': 'Creates a new tag'
+        },
+        {
+            'Endpoint': '/tag/',
+            'method': 'DELETE',
+            'body': {'body': ''},
+            'description': 'Deletes an exiting tag'
+        },
+        {
+            'Endpoint': '/travelplan/',
+            'method': 'POST',
+            'body': {'body': ''},
+            'description': 'Creates a travel plan'
+        },
+        {
+            'Endpoint': '/trip/',
+            'method': 'GET',
+            'body': None,
+            'description': 'Returns today\'s suggested routes'
+        },
+        {
+            'Endpoint': '/login/',
+            'method': 'GET',
+            'body': {'body': ''},
+            'description': 'Returns user id (>= 0) if user login is succeful. If failed, returns -1'
+        },
+    ]
 
+    return Response(routes)
+
+@api_view(['PUT', 'DELETE'])
+def handleTag(request):
+    body = request.data
+
+    if request.method == 'PUT':
+        serializer = TagSerializer(data=body)
+
+        if serializer.is_valid():
+            tag:Tag = serializer.create(serializer.validated_data)
+            tag.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    if request.method == 'DELETE':
+        tagName = body['tagName']
+        tag = Tag.objects.get(tag_name=tagName)
+        tag.delete()
+        return Response(f'Tag {tagName} was deleted')
 
 @api_view(['POST'])
+def handleTravelPlan(request):
+    pass
+
+@api_view(['GET'])
+def handleTrip(request):
+    pass
+
+@api_view(['GET'])
 def handleLogin(request):
     username = request.data.get('username')
     password = request.data.get('password')
@@ -30,87 +88,6 @@ def handleLogin(request):
     else:
         return Response('success')
 
-
-
-#到达时间  2个tag name和其真实地址
-#2个调用地址 获取地址对应的id
-#全部存到travelplan数据库
-@api_view(['POST'])
-def handleTravelPlan(request):
-    user = request.session.get('username')
-    depart_address = request.data.get('depart_address')
-    depart_id = TransportAPI(depart_address)
-    request.session['depart_id'] = depart_id
-    arrive_address = request.session.get('arrive_address')
-    arrive_id = TransportAPI(arrive_address)
-    request.session['arrive_id'] = arrive_id
-    arrive_tag_name = request.session.get('arrive_tag_name')
-    travel_plan = TravelPlan.objects.create(user = user,origin_name = depart_address,origin_id = depart_id, origin_tag = depart_tag_name, dest_address = arrive_address, dest_id = arrive_id, dest_tag = arrive_tag_name)
-    travel_plan.save()
-    return Response('success')
-
-#别名 和 地址传入数据库
-@api_view(['POST'])
-def handleTag(request):
-    arrive_address = request.data.get('arrive_address')
-    user = request.session.get('username')
-    arrive_tag_name = request.data.get('arrive_tag_name')
-    request.session['arrive_tag_name'] = arrive_tag_name
-    request.session['arrive_address'] = arrive_address
-    Tag.objects.create(user=user, tag_name=arrive_tag_name, address=arrive_address)
-    return Response('success')
-
-
-#monitor：
-#筛选今天的plan
-#2个ID和到达时间里面调用时间api
-#更新到达时间
-@api_view(['GET'])
-def monitor(request):
-    today = timezone.now().date()
-    today_plans = TravelPlan.objects.filter(date__date=today)
-    depart_id = request.session.get('depart_id')
-    arrive_id = request.session.get('arrive_id')
-    for plan in today_plans:
-        plan.expected_arrival_time = api(depart_id,arrive_id)
-        plan.save()
-    return Response('success')
-
-
-@api_view(['GET'])
-def handleTrip(request):
-    body = request.data
-    userId = body['userId']
-    travel_plans: List[TravelPlan] = TravelPlan.objects.filter(user_id=userId)
-    trips = []
-    for travel_plan in travel_plans:
-        info = transapi.query_trip(travel_plan.departure_stop_id,
-                            travel_plan.arrival_stop_id,
-                            travel_plan.expected_arrival_time.strftime('%H%M'))
-        trip = {}
-        trip['timeToDeparturePlatform'] = travel_plan.time_to_departure_platform
-        trip['journeys'] = []
-        for journey in info:
-            cleared_journey = {
-                'transportation': {
-                    'name': journey['transportation']['number'],
-                    'description': journey['transportation']['description'],
-                },
-                'departureStop': journey['origin']['name'],
-                'estimatedDepartureTime': journey['origin']['departureTimeEstimated'],
-                'arrivalStop': journey['destination']['name'],
-                'estimatedArrivalTime': journey['destination']['arrivalTimeEstimated'],
-                'expectedArrivalTime': travel_plan.expected_arrival_time,
-                'delay': compute_delay_in_minutes(journey),
-                'stopSequence': [stop['name'] for stop in journey['stopSequence']]
-            }
-            trip['journeys'].append(cleared_journey)
-        trips.append(trip)
-    serializer = TripSerializer(trips, many=True)
-    return Response(serializer.data)
-
-
-rideshare
 @api_view('PUT')
 def HandleRideShaing(request):
     body = request.data
