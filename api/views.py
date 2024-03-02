@@ -77,9 +77,14 @@ def getRoutes(request):
 
     return Response(routes)
 
-@api_view(['PUT', 'DELETE'])
+@api_view(['PUT', 'DELETE', 'GET'])
 def handleTag(request):
     body = request.data
+
+    if request.method == 'GET':
+        tags: List[Tag] = Tag.objects.all()
+        serializer = TagSerializer(tags, many=True)
+        return Response(serializer.data)
 
     if request.method == 'PUT':
         serializer = TagSerializer(data=body)
