@@ -1,7 +1,7 @@
 from django.db import models
 
 class User(models.Model):
-    # user_id = models.AutoField(primary_key=True)
+    user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
     email = models.EmailField()
@@ -10,12 +10,12 @@ class TravelPlan(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now=True)
     event_name = models.CharField(max_length=100)
-    expected_arrival_time = models.DateTimeField()
+    expected_arrival_time = models.CharField(max_length=5) # HHMM
     time_to_departure_platform = models.IntegerField()  # unit: minute
     departure_address = models.CharField(max_length=255)
-    departure_stop_id = models.IntegerField()
+    departure_stop_id = models.CharField(max_length=10)
     arrival_address = models.CharField(max_length=255)
-    arrival_stop_id = models.IntegerField()
+    arrival_stop_id = models.CharField(max_length=10)
     transport_mode = models.CharField(max_length=100)
 
 class Tag(models.Model):
@@ -55,8 +55,8 @@ class Notification(models.Model):
     is_read = models.BooleanField(default=False)
 
 class Ridesharing(models.Model):
-    user_id = models.IntegerField()
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     departure_address = models.CharField(max_length=255)
     arrival_address = models.CharField(max_length=255)
-    leave_before = models.DateTimeField()
+    leave_before = models.CharField(max_length=5) # HHMM
     contact = models.CharField(max_length=255)

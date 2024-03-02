@@ -4,3 +4,4 @@ backend/venv
 migrations
 .DS_Store
 trip.json
+package-lock.json
