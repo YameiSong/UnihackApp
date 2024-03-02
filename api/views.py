@@ -145,8 +145,8 @@ def handleTravelPlan(request):
 @api_view(['GET'])
 def handleTrip(request):
     body = request.data
-    userId = body['userId']
-    travel_plans: List[TravelPlan] = TravelPlan.objects.filter(user_id=userId)
+    userID = body['userID']
+    travel_plans: List[TravelPlan] = TravelPlan.objects.filter(user_id=userID)
     trips = []
     for travel_plan in travel_plans:
         info = transapi.query_trip(travel_plan.departure_stop_id, 
@@ -178,10 +178,17 @@ def handleLogin(request):
     username = request.data.get('username')
     password = request.data.get('password')
     request.session['username'] = username
-    if User.objects.filter(username=username,password=password).exists():
-        return Response('false')
-    else:
-        return Response('success')
+    try:
+        user = User.objects.get(username=username,password=password)
+        return JsonResponse({
+            'status': 'success',
+            'userID': user.pk
+            })
+    except User.DoesNotExist:
+        return JsonResponse({
+            'status': 'fail',
+            'userID': -1
+            })
 
 @api_view(['PUT'])
 def HandleRideShaing(request):
