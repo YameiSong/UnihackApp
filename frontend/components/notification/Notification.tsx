@@ -19,7 +19,8 @@ const NotificationComponent = () => {
     const notificationRef = useRef(null);
     const detailsRef = useRef(null);
     const dummyData = { destination: "Redfern", departure: "Central", departBefore: "10:00", passenger: "John Doe", rejected: false };
-
+    let notificationIsNotLoaded = useRef(false);
+    
     useEffect(() => {
         // Simulate an asynchronous operation with a delay of 5 seconds
         const asyncOperation = async () => {
@@ -31,6 +32,24 @@ const NotificationComponent = () => {
 
         asyncOperation();
     }, []);
+
+    useEffect(() => {
+        // Handles the case where the user was on a different tab, received a notification,
+        // and then returns to the tab
+        const handleWindowFocus = () => {
+            if (notificationIsNotLoaded.current){
+                notificationRef.current.click()
+                notificationIsNotLoaded = false;
+                console.log("runs");
+            }      
+        };
+    
+        window.addEventListener('focus', handleWindowFocus);
+    
+        return () => {
+          window.removeEventListener('focus', handleWindowFocus);
+        };
+      }, []);
 
     const handleAddNotification = ({ payload }) => {
         // This is to mimic receiving a notification from the backend
@@ -59,6 +78,7 @@ const NotificationComponent = () => {
             notificationRef.current.click()
         } else {
             sendBrowserNotification()
+            notificationIsNotLoaded.current = true;
         }
 
     }, [notifications]);
@@ -134,7 +154,7 @@ const NotificationComponent = () => {
                     <DrawerFooter>
                         <DrawerClose>
                             <div className="grid sm:grid-cols-2 sm:grid-rows-1 gap-x-12">
-                                <Button className="sm:col-start-2 sm:row-start-1" onClick={acceptRideShare}>Submit</Button>
+                                <Button className="sm:col-start-2 sm:row-start-1" onClick={confirmRideShare}>Submit</Button>
                                 <Button className="sm:col-start-1 sm:row-start-" onClick={rejectRideShare} variant="outline">Reject</Button>
                                 
                             </div>
