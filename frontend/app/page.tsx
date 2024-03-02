@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import MainNav from "@/components/navigation/MainNav";
 import UserNav from "@/components/navigation/UserNav";
 import CalendarBoard from "@/components/calendar/CalendarBoard";
-import MonitorBoard from "@/components/travel-monitor/MonitorBoard";
+import MonitorBoard from "@/components/travel-plan/TravelPlanBoard";
 import TagBoard from "@/components/tag/TagBoard";
 import TrackRouteBoard from "@/components/track-route/TrackRouteBoard";
 import GlobalProvider from "@/components/providers/GlobalStateProvider";

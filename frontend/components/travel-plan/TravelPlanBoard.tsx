@@ -11,9 +11,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import MonitorItem from "./MonitorItem";
+import MonitorItem from "./TravelPlanItem";
 
-const monitorItemsData = [
+const travelPlanItemsData = [
   {
     stopId: 0,
     departureAddress: "Home",
@@ -40,13 +40,13 @@ const monitorItemsData = [
   },
 ];
 
-const MonitorBoard = () => {
-  // const [monitorItems, setMonitorItems] = React.useState(monitorItemsData);
+const TravelPlanBoard = () => {
+  // const [monitorItems, setMonitorItems] = React.useState(travelPlanItemsData);
   const { travelPlans, setTravelPlans } = useGlobalContext();
 
   useEffect(() => {
     //call api
-    setTravelPlans(monitorItemsData);
+    setTravelPlans(travelPlanItemsData);
   }, []);
 
   return (
@@ -71,4 +71,4 @@ const MonitorBoard = () => {
   );
 };
 
-export default MonitorBoard;
+export default TravelPlanBoard;
