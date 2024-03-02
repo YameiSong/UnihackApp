@@ -18,7 +18,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const TagBoard = () => {
   const { tags, setTags, tagColours } = useGlobalContext();
@@ -48,44 +52,34 @@ const TagBoard = () => {
         <DialogTrigger className="hidden" ref={dialogTriggerRef}>
           Close
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle className="text-center">Create a tag</DialogTitle>
-            <DialogDescription>
-              <div className="grid grid-rows-3 grid-cols-2 gap-y-4 mt-4">
-                <div className="row-start-1 col-start-1 flex items-center">
-                  Enter tag name:
-                </div>
-                <div className="row-start-1 col-start-2 flex items-center justify-center">
-                  <input
-                    type="text"
-                    ref={newTagValueRef}
-                    className="border-2 border-gray-400 rounded"
-                  ></input>
-                </div>
-                <div className="row-start-2 col-start-1 flex items-center">
-                  Enter address:
-                </div>
-                <div className="row-start-2 col-start-2 flex items-center justify-center">
-                  <input
-                    type="text"
-                    ref={newTagAddressRef}
-                    className="border-2 border-gray-400 rounded"
-                  ></input>
-                </div>
-                <div className="row-start-3 col-span-2 flex justify-center">
-                  <button
-                    className="border-2 rounded-lg p-2 border-gray-400"
-                    onClick={handleCreateTag}
-                  >
-                    Create Tag
-                  </button>
-                </div>
-              </div>
-            </DialogDescription>
           </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Tag name:
+              </Label>
+              <Input id="name" className="col-span-3" ref={newTagValueRef} />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="username" className="text-right">
+                Address:
+              </Label>
+              <Input
+                id="username"
+                className="col-span-3"
+                ref={newTagAddressRef}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleCreateTag}>Create tag</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
+
       <Card className="min-h-[120px] shadow-md">
         <CardHeader className="flex flex-row items-center space-y-0 gap-x-4">
           <CardTitle className="text-lg font-bold">Tag</CardTitle>

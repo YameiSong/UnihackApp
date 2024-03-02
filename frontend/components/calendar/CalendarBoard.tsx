@@ -105,6 +105,12 @@ const CalendarBoard = () => {
     }
   };
 
+  const clearSelection = () => {
+    setDepartureTagChoice(undefined);
+    setDestinationTagChoice(undefined);
+    addTagTimeTimeRef.current!.value = "";
+  };
+
   const handleClickDay = (value: Date) => {
     dialogTriggerRef.current?.click();
     selectedDate = value;
@@ -329,12 +335,10 @@ const CalendarBoard = () => {
           </div>
 
           <DialogFooter>
-            <button
-              className="ring-2 rounded-lg p-2 ring-gray-400"
-              onClick={addTagTime}
-            >
-              Add tag and time
-            </button>
+            <Button onClick={addTagTime}>Create travel plan</Button>
+            <Button variant="outline" onClick={clearSelection}>
+              Clear
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

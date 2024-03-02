@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 
 import {
   Card,
@@ -9,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import SharedRiding from "./ShareRiding";
 import Route from "./Route";
+import TravelMonitor from "@/types/TravelMonitor";
 
 const suggestedRoutes = [
   {
@@ -32,6 +35,18 @@ const suggestedRoutes = [
 ];
 
 const TrackRouteBoard = () => {
+  const [travelMonitor, setTravelMonitor] = useState<TravelMonitor>();
+
+  useEffect(() => {
+    try {
+      //call api to fetch today's monitor
+      const fetchTodayMonitor = async () => {};
+      fetchTodayMonitor();
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
   return (
     <Card className="shadow-md">
       <CardHeader>
@@ -76,6 +91,13 @@ const TrackRouteBoard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
+                {!travelMonitor && (
+                  // handle case when no travel plans for today here
+                  <div></div>
+                  // <div className="flex items-center justify-center h-[100px]">
+                  //   No suggested route available
+                  // </div>
+                )}
                 {suggestedRoutes.map((route, index) => (
                   <Route
                     key={index}
