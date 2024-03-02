@@ -1,9 +1,9 @@
-from django.shortcuts import render
+from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Tag, TravelPlan
-from .serializers import TagSerializer, TripSerializer
+from .serializers import TagSerializer #, TripSerializer
 from .transport_api import TransportAPI
 from typing import List
 from datetime import datetime
@@ -116,8 +116,7 @@ def handleTrip(request):
             }
             trip['journeys'].append(cleared_journey)
         trips.append(trip)
-    serializer = TripSerializer(trips, many=True)
-    return Response(serializer.data)
+    return JsonResponse(trips)
 
 @api_view(['GET'])
 def handleLogin(request):

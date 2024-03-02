@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer, ALL_FIELDS
-from .models import Tag, TravelPlan, User, Trip
+from .models import Tag, TravelPlan, User #, Trip
 
 class TagSerializer(ModelSerializer):
     class Meta:
@@ -11,10 +11,10 @@ class TravelPlanSerializer(ModelSerializer):
         model = TravelPlan
         fields = ALL_FIELDS
 
-class TripSerializer(ModelSerializer):
-    class Meta:
-        model = Trip
-        fields = ALL_FIELDS
+# class TripSerializer(ModelSerializer):
+#     class Meta:
+#         model = Trip
+#         fields = ALL_FIELDS
 
 class UserSerializer(ModelSerializer):
     class Meta:
