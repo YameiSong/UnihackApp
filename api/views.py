@@ -30,7 +30,7 @@ def getRoutes(request):
             'Endpoint': '/tag/',
             'method': 'PUT',
             'body': {
-                'user_id': 'string',
+                'user_id': 'int',
                 'tag_name': 'string',
                 'address': 'string',
                      },
@@ -40,7 +40,7 @@ def getRoutes(request):
             'Endpoint': '/tag/',
             'method': 'DELETE',
             'body': {
-                'user_id': 'string',
+                'user_id': 'int',
                 'tag_name': 'string'
                 },
             'description': 'Deletes an exiting tag'
@@ -48,14 +48,14 @@ def getRoutes(request):
         {
             'Endpoint': '/tag/',
             'method': 'GET',
-            'body': {'userID': 'string'},
+            'param': {'userID': 'string'},
             'description': 'Returns all tags'
         },
         {
             'Endpoint': '/travelplan/',
             'method': 'POST',
             'body': {
-                'user_id': 'string',
+                'user_id': 'int',
                 'origin_station': 'string',
                 'destination_station': 'string',
                 'arrival_time': 'string'
@@ -65,19 +65,19 @@ def getRoutes(request):
         {
             'Endpoint': '/travelplan/',
             'method': 'GET',
-            'body': {'user_id': 'string'},
+            'param': {'user_id': 'int'},
             'description': 'Returns a travel plan'
         },
         {
             'Endpoint': '/trip/',
             'method': 'GET',
-            'body': {'user_id': 'string'},
+            'param': {'user_id': 'int'},
             'description': 'Returns today\'s suggested routes and ride sharing info'
         },
         {
             'Endpoint': '/login/',
             'method': 'GET',
-            'body': {
+            'param': {
                 'username': 'string',
                 'password': 'string'
                      },
@@ -89,14 +89,13 @@ def getRoutes(request):
 
 @api_view(['PUT', 'DELETE', 'GET'])
 def handleTag(request):
-    user_id = request.data.get('user_id')
-    # get user
-    try:
-        user = User.objects.get(user_id=user_id)
-    except User.DoesNotExist:
-        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-    
     if request.method == 'GET':
+        user_id = request.GET.get('user_id')
+        # get user
+        try:
+            user = User.objects.get(user_id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)  
         tags: List[Tag] = Tag.objects.filter(user_id=user)
         serializer = TagSerializer(tags, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -112,6 +111,12 @@ def handleTag(request):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     if request.method == 'DELETE':
+        user_id = request.data.get('user_id')
+        # get user
+        try:
+            user = User.objects.get(user_id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)  
         tagName = request.data.get('tag_name')
         tag = Tag.objects.get(user_id=user, tag_name=tagName)
         tag.delete()
@@ -120,12 +125,12 @@ def handleTag(request):
 @api_view(['GET', 'POST'])
 def handleTravelPlan(request):
     if request.method == 'GET':
-        user_id = request.data.get('user_id')
+        user_id = request.GET.get('user_id')
         # get user
         try:
             user = User.objects.get(user_id=user_id)
         except User.DoesNotExist:
-            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)  
         travel_plans: List[TravelPlan] = TravelPlan.objects.filter(user_id=user)
         serializer = TravelPlanSerializer(travel_plans, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -169,7 +174,7 @@ def handleTravelPlan(request):
 
 @api_view(['GET'])
 def handleTrip(request):
-    user_id = request.data.get('user_id')
+    user_id = request.GET.get('user_id')
     # get user
     try:
         user = User.objects.get(user_id=user_id)
@@ -214,8 +219,8 @@ def handleTrip(request):
 
 @api_view(['GET'])
 def handleLogin(request):
-    username = request.data.get('username')
-    password = request.data.get('password')
+    username = request.GET.get('username')
+    password = request.GET.get('password')
     request.session['username'] = username
     try:
         user = User.objects.get(username=username,password=password)
