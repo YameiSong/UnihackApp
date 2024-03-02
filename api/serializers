@@ -1,0 +1,7 @@
+from rest_framework.serializers import ModelSerializer, ALL_FIELDS
+from .models import RideSharing
+
+class RideSharingSerializer(ModelSerializer):
+    class Meta:
+        model = RideSharing
+        fields = ALL_FIELDS

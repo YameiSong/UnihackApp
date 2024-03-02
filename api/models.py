@@ -29,3 +29,10 @@ class Notification(models.Model):
     message = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
+
+class Ridesharing(models.Model):
+    userid = models.IntegerField()
+    departure_address = models.CharField(max_length=255)
+    arrival_address = models.CharField(max_length=255)
+    leave_before = models.DateTimeField()
+    contact = models.CharField(max_length=255)
