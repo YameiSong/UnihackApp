@@ -8,6 +8,8 @@ django.setup()
 
 from api.models import User, TravelPlan, Tag, Ridesharing, Notification
 
+#test
+
 # User1 
 user1 = User(username='user1', password='password1', email='user1@example.com')
 user1.save()
