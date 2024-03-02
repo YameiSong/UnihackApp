@@ -9,12 +9,12 @@ const Homepages = () => {
 
   const handleClickLogin = () => {
     setShowLoginMessage(true);
-    setShowRegistMessage(false); // 隐藏注册组件
+    setShowRegistMessage(false); 
   };
 
   const handleClickRegister = () => {
     setShowRegistMessage(true);
-    setShowLoginMessage(false); // 隐藏登录组件
+    setShowLoginMessage(false); 
   };
 
   return (
