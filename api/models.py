@@ -22,13 +22,13 @@ class Tag(models.Model):
     tag_name = models.CharField(max_length=100)
     address = models.CharField(max_length=255)
 
-# class Trip(models.Model):
-#     travel_plan = models.ForeignKey(TravelPlan, on_delete=models.CASCADE)
-#     updated_at = models.DateTimeField()
-#     estimated_travel_time = models.DateTimeField()
-#     optimized_route_details = models.CharField(max_length=255)
-#     departure_stop = models.CharField(max_length=255)
-#     arrival_stop = models.CharField(max_length=255)
+class Trip(models.Model):
+    travel_plan = models.ForeignKey(TravelPlan, on_delete=models.CASCADE)
+    updated_at = models.DateTimeField()
+    estimated_travel_time = models.DateTimeField()
+    optimized_route_details = models.CharField(max_length=255)
+    departure_stop = models.CharField(max_length=255)
+    arrival_stop = models.CharField(max_length=255)
 
 class Notification(models.Model):
     message = models.CharField(max_length=255)

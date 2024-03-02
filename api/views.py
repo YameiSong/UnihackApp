@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Tag, TravelPlan
-from .serializers import TagSerializer
+from .serializers import TagSerializer, TripSerializer
 from .transport_api import TransportAPI
 from typing import List
 from datetime import datetime
