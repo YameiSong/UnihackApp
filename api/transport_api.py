@@ -68,13 +68,14 @@ class TransportAPI:
         
         if response.status_code == 200:
             data = response.json()
-            journey = data['journeys'][0]['legs'][0]
-            trip_info = {
-                'origin': journey['origin'],
+            journeys = data['journeys'][0]['legs']
+            # print(json.dumps(data, indent=4))
+            trip_info = [
+                {'origin': journey['origin'],
                 'destination': journey['destination'],
                 'transportation': journey['transportation'],
-                'stopSequence': journey['stopSequence'],
-            }
+                'stopSequence': journey['stopSequence'],} for journey in journeys
+            ]
             return trip_info
         else:
             print(f"Error: {response.status_code, json.dumps(response.json(), indent=4)}")
