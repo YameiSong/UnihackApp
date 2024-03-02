@@ -6,6 +6,7 @@ class User(models.Model):
     email = models.EmailField()
 
 class TravelPlan(models.Model):
+    stop_id = models.IntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateTimeField()
     event_name = models.CharField(max_length=100)
