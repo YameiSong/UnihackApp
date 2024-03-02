@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useGlobalContext } from "../providers/GlobalStateProvider";
+import axiosInstance from "@/lib/axiosConfig";
 
 interface TagProps {
-  value: string;
+  tag_name: string;
   backgroundColour: string;
   canDelete?: boolean;
 }
 
-const Tag = ({ value, backgroundColour, canDelete = true }: TagProps) => {
+const Tag = ({ tag_name, backgroundColour, canDelete = true }: TagProps) => {
   const [isDeleted, setIsDeleted] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const { tags, setTags } = useGlobalContext();
@@ -24,9 +25,15 @@ const Tag = ({ value, backgroundColour, canDelete = true }: TagProps) => {
     setIsHovered(false);
   };
 
-  const handleDelete = () => {
-    setTags(tags.filter((tag) => tag.value !== value));
-    setIsDeleted(true);
+  const handleDelete = async () => {
+    try {
+      //call api to delete tag
+      // const res = await axiosInstance.delete(`/tags/${tag_name}`);
+      setTags(tags.filter((tag) => tag.tag_name !== tag_name));
+      setIsDeleted(true);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -38,7 +45,7 @@ const Tag = ({ value, backgroundColour, canDelete = true }: TagProps) => {
         onMouseLeave={handleOnMouseLeave}
       >
         <div className="row-start-1 col-start-1 flex justify-center">
-          {value}
+          {tag_name}
         </div>
         <div className="relative row-start-1 col-start-1 flex justify-end">
           {isHovered && canDelete && (

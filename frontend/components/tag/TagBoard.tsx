@@ -30,7 +30,7 @@ const TagBoard = () => {
   const newTagValueRef = useRef<HTMLInputElement>(null);
   const newTagAddressRef = useRef<HTMLInputElement>(null);
 
-  const handleCreateTag = () => {
+  const handleCreateTag = async () => {
     const value = newTagValueRef.current?.value;
     const address = newTagAddressRef.current?.value;
 
@@ -38,7 +38,10 @@ const TagBoard = () => {
       return;
     }
 
-    setTags([...tags, { value, address }]);
+    setTags([
+      ...tags,
+      { id: tags.length + 1, user_id: 1, tag_name: value, address: address },
+    ]);
     dialogTriggerRef.current?.click();
   };
 

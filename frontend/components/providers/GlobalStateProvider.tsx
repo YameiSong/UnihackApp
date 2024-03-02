@@ -1,27 +1,26 @@
 "use client";
 import React, { useContext, useEffect, useState } from "react";
-import TravelPlan from "@/types/TravelPlan";
-import axios from "axios";
+import axiosInstance from "@/lib/axiosConfig";
+
+import ITravelPlan from "@/types/ITravelPlan";
+import ITag from "@/types/ITag";
 
 interface GlobalContextProps {
   tagTimes: [];
   setTagTimes: (tagTimes: []) => void;
-  tags: {
-    value: string;
-    address: string;
-  }[];
-  setTags: (tags: { value: string; address: string }[]) => void;
+  tags: ITag[];
+  setTags: (tags: ITag[]) => void;
   tagColours: string[];
 
   //travel plans
-  travelPlans: TravelPlan[];
-  setTravelPlans: (travelPlans: TravelPlan[]) => void;
+  travelPlans: ITravelPlan[];
+  setTravelPlans: (travelPlans: ITravelPlan[]) => void;
 }
 
 const GlobalContext = React.createContext<GlobalContextProps>({
   tagTimes: [],
   setTagTimes: () => {},
-  tags: [{ value: "home", address: "1234 home street" }],
+  tags: [],
   setTags: () => {},
   tagColours: ["#B7DDF9", "#ECCBF4", "#CBF4EA", "#E2FA7F"],
 
@@ -35,18 +34,10 @@ export const useGlobalContext = () => {
 
 const GlobalProvider = ({ children }: any) => {
   const [tagTimes, setTagTimes] = useState<[]>([]);
-  const [tags, setTags] = useState<
-    {
-      value: string;
-      address: string;
-    }[]
-  >([
-    { value: "home", address: "1234 home street" },
-    { value: "school", address: "1234 school street" },
-  ]);
+  const [tags, setTags] = useState<ITag[]>([]);
   const tagColours = ["#B7DDF9", "#ECCBF4", "#CBF4EA", "#E2FA7F"];
 
-  const [travelPlans, setTravelPlans] = useState<TravelPlan[]>([]);
+  const [travelPlans, setTravelPlans] = useState<ITravelPlan[]>([]);
 
   /**
    * A TagTime is described as follows:
@@ -72,10 +63,24 @@ const GlobalProvider = ({ children }: any) => {
   useEffect(() => {
     try {
       const fetchAllTags = async () => {
-        const res = await axios.get("http://127.0.0.1:8000/api/tag");
+        const res = await axiosInstance.get("/tag");
         console.log(res.data);
+        setTags(res.data);
       };
       fetchAllTags();
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      const fetchAllTravelPlans = async () => {
+        const res = await axiosInstance.get("/travelplan?userID=1");
+        console.log(res.data);
+        setTravelPlans(res.data);
+      };
+      fetchAllTravelPlans();
     } catch (error) {
       console.log(error);
     }
