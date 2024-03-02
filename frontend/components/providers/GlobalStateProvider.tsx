@@ -1,6 +1,7 @@
 "use client";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import TravelPlan from "@/types/TravelPlan";
+import axios from "axios";
 
 interface GlobalContextProps {
   tagTimes: [];
@@ -67,6 +68,18 @@ const GlobalProvider = ({ children }: any) => {
    * who will compute the rest based off api response
    *
    */
+
+  useEffect(() => {
+    try {
+      const fetchAllTags = async () => {
+        const res = await axios.get("http://127.0.0.1:8000/api/tag");
+        console.log(res.data);
+      };
+      fetchAllTags();
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
   return (
     <GlobalContext.Provider
