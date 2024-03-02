@@ -7,6 +7,7 @@ from .serializers import TagSerializer, RideSharingSerializer, TravelPlanSeriali
 from .transport_api import TransportAPI
 from typing import List
 from datetime import datetime
+import json
 
 transapi = TransportAPI()
 
@@ -29,39 +30,48 @@ def getRoutes(request):
             'Endpoint': '/tag/',
             'method': 'PUT',
             'body': {
-                'tagName': 'string',
+                'user_id': 'string',
+                'tag_name': 'string',
                 'address': 'string',
-                'username': 'string',
                      },
             'description': 'Creates a new tag'
         },
         {
             'Endpoint': '/tag/',
             'method': 'DELETE',
-            'body': {'tagName': 'string'},
+            'body': {
+                'user_id': 'string',
+                'tag_name': 'string'
+                },
             'description': 'Deletes an exiting tag'
+        },
+        {
+            'Endpoint': '/tag/',
+            'method': 'GET',
+            'body': {'userID': 'string'},
+            'description': 'Returns all tags'
         },
         {
             'Endpoint': '/travelplan/',
             'method': 'POST',
             'body': {
-                'userID': 'string',
-                'originStation': 'string',
-                'destinationStation': 'string',
-                'arrivalTime': 'string'
+                'user_id': 'string',
+                'origin_station': 'string',
+                'destination_station': 'string',
+                'arrival_time': 'string'
                 },
             'description': 'Creates a travel plan'
         },
         {
             'Endpoint': '/travelplan/',
             'method': 'GET',
-            'body': {'userID': 'string'},
+            'body': {'user_id': 'string'},
             'description': 'Returns a travel plan'
         },
         {
             'Endpoint': '/trip/',
             'method': 'GET',
-            'body': {'userID': 'string'},
+            'body': {'user_id': 'string'},
             'description': 'Returns today\'s suggested routes'
         },
         {
@@ -79,10 +89,17 @@ def getRoutes(request):
 
 @api_view(['PUT', 'DELETE', 'GET'])
 def handleTag(request):
+    user_id = request.data.get('user_id')
+    # get user
+    try:
+        user = User.objects.get(user_id=user_id)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+    
     if request.method == 'GET':
-        tags: List[Tag] = Tag.objects.all()
+        tags: List[Tag] = Tag.objects.filter(user_id=user)
         serializer = TagSerializer(tags, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'PUT':
         serializer = TagSerializer(data=request.data)
@@ -95,15 +112,15 @@ def handleTag(request):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     if request.method == 'DELETE':
-        tagName = request.data.get('tagName')
-        tag = Tag.objects.get(tag_name=tagName)
+        tagName = request.data.get('tag_name')
+        tag = Tag.objects.get(user_id=user, tag_name=tagName)
         tag.delete()
-        return Response(f'Tag {tagName} was deleted')
+        return Response(f'Tag {tagName} was deleted', status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['GET', 'POST'])
 def handleTravelPlan(request):
     if request.method == 'GET':
-        user_id = request.GET.get('userID')
+        user_id = request.data.get('user_id')
         # get user
         try:
             user = User.objects.get(user_id=user_id)
@@ -111,14 +128,14 @@ def handleTravelPlan(request):
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         travel_plans: List[TravelPlan] = TravelPlan.objects.filter(user_id=user)
         serializer = TravelPlanSerializer(travel_plans, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     if request.method == 'POST':
         # Fetch request data
-        user_id = request.data.get('userID')
-        origin_station_name = request.data.get('originStation')
-        destination_station_name = request.data.get('destinationStation')
-        arrival_time = request.data.get('arrivalTime')
+        user_id = request.data.get('user_id')
+        origin_station_name = request.data.get('origin_station')
+        destination_station_name = request.data.get('destination_station')
+        arrival_time = request.data.get('arrival_time')
 
         # Get the station ID using TransportAPI
         origin_id = transapi.query_stop(origin_station_name)
@@ -135,14 +152,14 @@ def handleTravelPlan(request):
 
         # Create a TravelPlan object and save it to the database
         travel_plan = TravelPlan.objects.create(
-            user=user,
+            user_id=user,
             event_name='',
-            expected_arrival_time=datetime.strptime(arrival_time, '%H:%M'),
+            expected_arrival_time=arrival_time,
             time_to_departure_platform=10,
             departure_address=origin_station_name,
-            departure_stop_id='',
+            departure_stop_id=origin_id,
             arrival_address=destination_station_name,
-            arrival_stop_id='',  
+            arrival_stop_id=destination_id,  
             transport_mode=''  
         )
 
@@ -152,10 +169,10 @@ def handleTravelPlan(request):
 
 @api_view(['GET'])
 def handleTrip(request):
-    userID = request.GET.get('userID')
+    user_id = request.data.get('user_id')
     # get user
     try:
-        user = User.objects.get(user_id=userID)
+        user = User.objects.get(user_id=user_id)
     except User.DoesNotExist:
         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
     travel_plans: List[TravelPlan] = TravelPlan.objects.filter(user_id=user)
@@ -168,20 +185,24 @@ def handleTrip(request):
         trip['timeToDeparturePlatform'] = travel_plan.time_to_departure_platform
         trip['journeys'] = []
         for journey in info:
-            cleared_journey = {
-                'transportation': {
-                    'name': journey['transportation']['number'],
-                    'description': journey['transportation']['description'],
-                },
-                'departureStop': journey['origin']['name'],
-                'estimatedDepartureTime': journey['origin']['departureTimeEstimated'],
-                'arrivalStop': journey['destination']['name'],
-                'estimatedArrivalTime': journey['destination']['arrivalTimeEstimated'],
-                'expectedArrivalTime': travel_plan.expected_arrival_time,
-                'delay': compute_delay_in_minutes(journey),
-                'stopSequence': [stop['name'] for stop in journey['stopSequence']]
-            }
-            trip['journeys'].append(cleared_journey)
+            try:
+                cleared_journey = {
+                    'transportation': {
+                        'name': journey['transportation'].get('name', journey['transportation']['product']['name']),
+                        'description': journey['transportation'].get('description', ''),
+                    },
+                    'departureStop': journey['origin']['name'],
+                    'estimatedDepartureTime': journey['origin']['departureTimeEstimated'],
+                    'arrivalStop': journey['destination']['name'],
+                    'estimatedArrivalTime': journey['destination']['arrivalTimeEstimated'],
+                    'expectedArrivalTime': travel_plan.expected_arrival_time,
+                    'delay': compute_delay_in_minutes(journey),
+                    'stopSequence': [stop['name'] for stop in journey['stopSequence']]
+                }
+                trip['journeys'].append(cleared_journey)
+            except KeyError as e:
+                print('KeyError:', e)
+                print(json.dumps(journey, indent=4))
         trips.append(trip)
 
         info = Ridesharing.objects.last()
@@ -189,24 +210,24 @@ def handleTrip(request):
     return JsonResponse({
         'trips': trips,
         'rideSharing': serializer.data
-        })
+        }, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def handleLogin(request):
-    username = request.GET.get('username')
-    password = request.GET.get('password')
+    username = request.data.get('username')
+    password = request.data.get('password')
     request.session['username'] = username
     try:
         user = User.objects.get(username=username,password=password)
         return JsonResponse({
             'status': 'success',
             'userID': user.user_id
-            })
+            }, status=status.HTTP_200_OK)
     except User.DoesNotExist:
         return JsonResponse({
             'status': 'fail',
             'userID': -1
-            })
+            }, status=status.HTTP_200_OK)
 
 @api_view(['PUT'])
 def HandleRideShaing(request):
