@@ -7,6 +7,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import SharedRiding from "./ShareRiding";
+import Route from "./Route";
+
+const suggestedRoutes = [
+  {
+    departureTime: "8:00 AM",
+    departureAddress: "Townhall",
+    arrivalTime: "8:30 AM",
+    arrivalAddress: "QVB",
+  },
+  {
+    departureTime: "8:00 AM",
+    departureAddress: "Townhall",
+    arrivalTime: "8:30 AM",
+    arrivalAddress: "QVB",
+  },
+  {
+    departureTime: "8:00 AM",
+    departureAddress: "Townhall",
+    arrivalTime: "8:30 AM",
+    arrivalAddress: "QVB",
+  },
+];
 
 const TrackRouteBoard = () => {
   return (
@@ -18,36 +41,55 @@ const TrackRouteBoard = () => {
       <CardContent>
         <div className="flex flex-col space-y-7">
           <div className="flex flex-col md:flex-row items-center justify-between space-y-7 md:space-y-0 md:space-x-3">
-            <Card className="rounded-md shadow-md bg-gray-100 md:w-[30%] border-0 w-full">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-md font-bold">Moderate</CardTitle>
-              </CardHeader>
-              <CardContent></CardContent>
+            <Card className="rounded-md shadow-md bg-gray-100 md:w-[30%] border-0 w-full h-[140px]">
+              <CardContent className="flex flex-col items-start space-y-1 p-5">
+                <span className="text-xs font-[500]">Crowd Density</span>
+                <span className="text-xl font-bold text-black">Moderate</span>
+              </CardContent>
             </Card>
 
-            <Card className="rounded-md shadow-md bg-gray-100 md:w-[30%] border-0 w-full">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-md font-bold">Delayed</CardTitle>
-              </CardHeader>
-              <CardContent></CardContent>
+            <Card className="rounded-md shadow-md bg-gray-100 md:w-[30%] border-0 w-full h-[140px]">
+              <CardContent className="flex flex-col items-start space-y-2 p-5">
+                <span className="text-xs font-[500]">Arrival Status</span>
+                <span className="text-xl font-bold text-black">Delayed</span>
+                <span className="text-xl pt-2">15 mins</span>
+              </CardContent>
             </Card>
 
-            <Card className="rounded-md shadow-md bg-gray-100 md:w-[30%] border-0 w-full">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-md font-bold">From - To</CardTitle>
-              </CardHeader>
-              <CardContent></CardContent>
+            <Card className="rounded-md shadow-md bg-gray-100 md:w-[30%] border-0 w-full h-[140px]">
+              <CardContent className="flex flex-col items-start space-y-1 p-5">
+                <span className="text-xs font-[500]">From</span>
+                <span className="text-xl font-semibold text-black">
+                  Townhall
+                </span>
+                <span className="text-xs font-[500]">To</span>
+                <span className="text-xl font-semibold text-black">QVB</span>
+              </CardContent>
             </Card>
           </div>
 
-          <Card className="rounded-md shadow-md bg-gray-100 min-h-[300px] border-0">
+          <Card className="rounded-md shadow-md bg-gray-100 min-h-[180px] border-0">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xl font-bold">
+              <CardTitle className="text-xl font-bold mb-1">
                 Suggested Route
               </CardTitle>
             </CardHeader>
-            <CardContent></CardContent>
+            <CardContent>
+              <div className="space-y-2">
+                {suggestedRoutes.map((route, index) => (
+                  <Route
+                    key={index}
+                    departureTime={route.departureTime}
+                    departureAddress={route.departureAddress}
+                    arrivalTime={route.arrivalTime}
+                    arrivalAddress={route.arrivalAddress}
+                  />
+                ))}
+              </div>
+            </CardContent>
           </Card>
+
+          <SharedRiding />
         </div>
       </CardContent>
     </Card>
