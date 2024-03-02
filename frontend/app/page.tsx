@@ -8,6 +8,7 @@ import MonitorBoard from "@/components/travel-monitor/MonitorBoard";
 import TagBoard from "@/components/tag/TagBoard";
 import TrackRouteBoard from "@/components/track-route/TrackRouteBoard";
 import GlobalProvider from "@/components/providers/GlobalStateProvider";
+import NotificationComponent from "@/components/notification/Notification";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -45,6 +46,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+     <NotificationComponent/>
     </GlobalProvider>
   );
 }
