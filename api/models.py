@@ -8,7 +8,7 @@ class User(models.Model):
 
 class TravelPlan(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now=True)
     event_name = models.CharField(max_length=100)
     expected_arrival_time = models.DateTimeField()
     time_to_departure_platform = models.IntegerField()  # unit: minute

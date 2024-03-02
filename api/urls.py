@@ -7,5 +7,5 @@ urlpatterns = [
     path('api/travelplan/', views.handleTravelPlan, name="handle travel plan"),
     path('api/trip/', views.handleTrip, name="handle trip"),
     path('api/login/', views.handleLogin, name="handle log in"),
-    path('api/handleridesharing/', views.RideShaing, name="handle ride shaing")
+    path('api/handleridesharing/', views.HandleRideShaing, name="handle ride shaing")
 ]

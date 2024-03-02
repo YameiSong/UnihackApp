@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Tag, User, TravelPlan
-from .serializers import TagSerializer, RideSharingSerializer
+from .serializers import TagSerializer, RideSharingSerializer, TravelPlanSerializer
 from .transport_api import TransportAPI
 from typing import List
 from datetime import datetime
@@ -44,19 +44,33 @@ def getRoutes(request):
         {
             'Endpoint': '/travelplan/',
             'method': 'POST',
-            'body': {'body': ''},
+            'body': {
+                'userID': 'string',
+                'originStation': 'string',
+                'destinationStation': 'string',
+                'arrivalTime': 'string'
+                },
             'description': 'Creates a travel plan'
+        },
+        {
+            'Endpoint': '/travelplan/',
+            'method': 'GET',
+            'body': {'userID': 'string'},
+            'description': 'Returns a travel plan'
         },
         {
             'Endpoint': '/trip/',
             'method': 'GET',
-            'body': None,
+            'body': {'userID': 'string'},
             'description': 'Returns today\'s suggested routes'
         },
         {
             'Endpoint': '/login/',
             'method': 'GET',
-            'body': {'body': ''},
+            'body': {
+                'username': 'string',
+                'password': 'string'
+                     },
             'description': 'Returns user id (>= 0) if user login is succeful. If failed, returns -1'
         },
     ]
@@ -83,42 +97,50 @@ def handleTag(request):
         tag.delete()
         return Response(f'Tag {tagName} was deleted')
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 def handleTravelPlan(request):
-    # Fetch request data
-    user_id = request.data.get('userID')
-    origin_station_name = request.data.get('originStation')
-    destination_station_name = request.data.get('destinationStation')
-    arrival_time = request.data.get('arrivalTime')
+    if request.method == 'GET':
+        user_id = request.data.get('userID')
+        travel_plans: List[TravelPlan] = TravelPlan.objects.filter(user_id=user_id)
+        serializer = TravelPlanSerializer(travel_plans, many=True)
+        return Response(serializer.data)
 
-    # Get the station ID using TransportAPI
-    origin_id = transapi.query_stop(origin_station_name)
-    destination_id = transapi.query_stop(destination_station_name)
+    if request.method == 'POST':
+        # Fetch request data
+        user_id = request.data.get('userID')
+        origin_station_name = request.data.get('originStation')
+        destination_station_name = request.data.get('destinationStation')
+        arrival_time = request.data.get('arrivalTime')
 
-    if not origin_id or not destination_id:
-        return Response({'error': 'Invalid station name'}, status=status.HTTP_400_BAD_REQUEST)
+        # Get the station ID using TransportAPI
+        origin_id = transapi.query_stop(origin_station_name)
+        destination_id = transapi.query_stop(destination_station_name)
 
-    # get user
-    try:
-        user = User.objects.get(id=user_id)
-    except User.DoesNotExist:
-        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        if not origin_id or not destination_id:
+            return Response({'error': 'Invalid station name'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Create a TravelPlan object and save it to the database
-    travel_plan = TravelPlan.objects.create(
-        user=user,
-        date=timezone.now(),
-        event_name='',
-        expected_arrival_time=datetime.datetime.strptime(arrival_time, '%H:%M'),
-        time_to_departure_platform=10,
-        departure_address=origin_station_name,
-        departure_stop_id='',
-        arrival_address=destination_station_name,
-        arrival_stop_id='',  
-        transport_mode=''  
-    )
+        # get user
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    return Response({'message': 'Travel plan created successfully'}, status=status.HTTP_201_CREATED)
+        # Create a TravelPlan object and save it to the database
+        travel_plan = TravelPlan.objects.create(
+            user=user,
+            event_name='',
+            expected_arrival_time=datetime.strptime(arrival_time, '%H:%M'),
+            time_to_departure_platform=10,
+            departure_address=origin_station_name,
+            departure_stop_id='',
+            arrival_address=destination_station_name,
+            arrival_stop_id='',  
+            transport_mode=''  
+        )
+
+        travel_plan.save()
+
+        return Response({'message': 'Travel plan created successfully'}, status=status.HTTP_201_CREATED)
 
 @api_view(['GET'])
 def handleTrip(request):
