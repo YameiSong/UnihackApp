@@ -72,7 +72,7 @@ def getRoutes(request):
             'Endpoint': '/trip/',
             'method': 'GET',
             'body': {'user_id': 'string'},
-            'description': 'Returns today\'s suggested routes'
+            'description': 'Returns today\'s suggested routes and ride sharing info'
         },
         {
             'Endpoint': '/login/',
