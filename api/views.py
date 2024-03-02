@@ -4,6 +4,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Tag
 from .serializers import TagSerializer
+from .transport_api import TransportAPI
+
+transapi = TransportAPI()
 
 # Create your views here.
 @api_view(['GET'])
