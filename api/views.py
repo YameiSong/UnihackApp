@@ -183,7 +183,7 @@ def handleLogin(request):
     else:
         return Response('success')
 
-@api_view('PUT')
+@api_view(['PUT'])
 def HandleRideShaing(request):
     body = request.data
     serializer = RideSharingSerializer(data=body)
