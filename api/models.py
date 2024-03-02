@@ -16,7 +16,7 @@ class TravelPlan(models.Model):
     transport_mode = models.CharField(max_length=100)
 
 class Tag(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     tag_name = models.CharField(max_length=100)
     address = models.CharField(max_length=255)
 
