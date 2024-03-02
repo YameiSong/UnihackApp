@@ -19,7 +19,7 @@ class TravelPlan(models.Model):
     transport_mode = models.CharField(max_length=100)
 
 class Tag(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     tag_name = models.CharField(max_length=100)
     address = models.CharField(max_length=255)
 
@@ -55,7 +55,7 @@ class Notification(models.Model):
     is_read = models.BooleanField(default=False)
 
 class Ridesharing(models.Model):
-    userid = models.IntegerField()
+    user_id = models.IntegerField()
     departure_address = models.CharField(max_length=255)
     arrival_address = models.CharField(max_length=255)
     leave_before = models.DateTimeField()
