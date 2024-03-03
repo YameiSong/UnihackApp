@@ -58,5 +58,5 @@ class Ridesharing(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     departure_address = models.CharField(max_length=255)
     arrival_address = models.CharField(max_length=255)
-    leave_before = models.CharField(max_length=5) # HHMM
+    leave_before = models.CharField(max_length=255)
     contact = models.CharField(max_length=255)
