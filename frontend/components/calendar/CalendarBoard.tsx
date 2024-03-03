@@ -5,6 +5,7 @@ import "react-calendar/dist/Calendar.css";
 import { useRef, useState } from "react";
 import { useGlobalContext } from "../providers/GlobalStateProvider";
 import ITag from "@/types/ITag";
+import axiosInstance from "@/lib/axiosConfig";
 
 import { format } from "date-fns";
 
@@ -78,6 +79,8 @@ const CalendarBoard = () => {
     };
     console.log(tagTime);
 
+    
+
     if (tagTime.departureTag?.address === tagTime.destinationTag?.address) {
       alert("Departure and destination cannot be the same");
       return;
@@ -85,6 +88,7 @@ const CalendarBoard = () => {
 
     //call api
     try {
+      
       // setTravelPlans([...travelPlans, travelPlan]);
     } catch (error) {
       console.log(error);

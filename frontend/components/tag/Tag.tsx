@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useGlobalContext } from "../providers/GlobalStateProvider";
 import axiosInstance from "@/lib/axiosConfig";
+import axios from "axios";
 
 interface TagProps {
   tag_name: string;
@@ -27,17 +28,35 @@ const Tag = ({ tag_name, backgroundColour, canDelete = true }: TagProps) => {
 
   const handleDelete = async () => {
     try {
-      //call api to delete tag
-      // const res = await axiosInstance.delete(`/tags/${tag_name}`);
+      
+      const url = 'tag';
+
+      // Define the data to be sent in the request body
+      const data = {
+        user_id: 1, // Replace with the actual user ID
+        tag_name: tag_name // Replace with the actual tag name
+      };
+
+      // Make a DELETE request using Axios
+      axiosInstance.delete(url, { data })
+        .then(response => {
+          console.log('Tag deleted successfully');
+          // Handle response if needed
+        })
+        .catch(error => {
+          console.error('Error deleting tag:', error);
+          // Handle error if needed
+        });
       setTags(tags.filter((tag) => tag.tag_name !== tag_name));
-      setIsDeleted(true);
+      console.log(tags)
+   
     } catch (error) {
       console.log(error);
     }
   };
 
   return (
-    !isDeleted && (
+    
       <div
         className="px-4 py-2 rounded-full grid grid-rows-1 grid-cols-1"
         style={extraButtonStyles}
@@ -70,7 +89,7 @@ const Tag = ({ tag_name, backgroundColour, canDelete = true }: TagProps) => {
           )}
         </div>
       </div>
-    )
+    
   );
 };
 export default Tag;

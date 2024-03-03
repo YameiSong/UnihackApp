@@ -3,6 +3,7 @@ import React from "react";
 import { useState, useEffect, useRef } from "react";
 import Tag from "./Tag";
 import { useGlobalContext } from "../providers/GlobalStateProvider";
+import axiosInstance from "@/lib/axiosConfig";
 
 import {
   Card,
@@ -37,6 +38,27 @@ const TagBoard = () => {
     if (!value || !address) {
       return;
     }
+
+    
+    const url = '/tag/';
+
+    // Define the data to be sent in the request body
+    const data = {
+      user_id: 1, 
+      tag_name: value,
+      address: address
+    };
+
+    // Make a PUT request using Axios
+    axiosInstance.put(url, data)
+      .then(response => {
+        console.log('Tag updated successfully');
+        // Handle response if needed
+      })
+      .catch(error => {
+        console.error('Error updating tag:', error);
+        // Handle error if needed
+      });
 
     setTags([
       ...tags,
