@@ -83,6 +83,18 @@ def getRoutes(request):
                      },
             'description': 'Returns user id (>= 0) if user login is succeful. If failed, returns -1'
         },
+        {
+            'Endpoint': '/ridesharing/',
+            'method': 'PUT',
+            'body': {
+                'user_id': 'int',
+                'departure_address': 'string',
+                'arrival_address': 'string',
+                'leave_before': 'string',
+                'contact': 'string'
+                     },
+            'description': 'Returns user id (>= 0) if user login is succeful. If failed, returns -1'
+        },
     ]
 
     return Response(routes)
