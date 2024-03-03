@@ -336,7 +336,7 @@ const CalendarBoard = () => {
           <CardTitle className="text-lg font-bold">Calendar</CardTitle>
         </CardHeader>
         <CardContent className="flex justify-center">
-            <Calendar onClickDay={handleClickDay} locale="en-US" />
+          <Calendar onClickDay={handleClickDay} locale="en-US" />
         </CardContent>
       </Card>
     </>
