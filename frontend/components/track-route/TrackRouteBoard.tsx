@@ -42,7 +42,7 @@ const TrackRouteBoard = () => {
     try {
       //call api to fetch today's monitor
       const fetchTodayMonitor = async () => {
-        const res = await axiosInstance.get("/trip?userID=1");
+        const res = await axiosInstance.get("/trip?user_id=1");
         console.log(res.data);
       };
       fetchTodayMonitor();
