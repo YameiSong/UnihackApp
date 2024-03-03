@@ -63,7 +63,7 @@ const GlobalProvider = ({ children }: any) => {
   useEffect(() => {
     try {
       const fetchAllTags = async () => {
-        const res = await axiosInstance.get("/tag");
+        const res = await axiosInstance.get("/tag?user_id=1");
         console.log(res.data);
         setTags(res.data);
       };
@@ -76,7 +76,7 @@ const GlobalProvider = ({ children }: any) => {
   useEffect(() => {
     try {
       const fetchAllTravelPlans = async () => {
-        const res = await axiosInstance.get("/travelplan?userID=1");
+        const res = await axiosInstance.get("/travelplan?user_id=1");
         console.log(res.data);
         setTravelPlans(res.data);
       };

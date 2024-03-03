@@ -13,25 +13,41 @@ import {
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { Input } from "../ui/input";
+import axiosInstance from "@/lib/axiosConfig";
+import axios from "axios";
 
 const NotificationComponent = () => {
-  const [notifications, setNotifications] = useState<string[]>([]);
+  const [notifications, setNotifications] = useState<string>({} as any);
   const notificationRef = useRef<HTMLDivElement | null>(null);
   const detailsRef = useRef<HTMLDivElement | null>(null);
+  const contactRef = useRef<HTMLInputElement | null>(null);
   const dummyData = { destination: "Redfern", departure: "Central", departBefore: "10:00", passenger: "John Doe", rejected: false };
   let notificationIsNotLoaded = useRef(false);
 
+
+
   useEffect(() => {
-    // Simulate an asynchronous operation with a delay of 5 seconds
-    const asyncOperation = async () => {
-      /// Replace with call to backend endpoint for notifications
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      handleAddNotification();
-
-    };
-
-    asyncOperation();
+    try {
+      const fetchNotification = async () => {
+        const response = await axiosInstance.get("trip?user_id=1");
+        try{
+          // Get user's name
+          const response = await axiosInstance.get("login?user_id=1")
+          console.log(response.data)
+        }catch(error){
+          console.log(error);
+        }
+        setNotifications(response.data.rideSharing)
+       
+      };
+      fetchNotification()
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
+
+
+   
 
   useEffect(() => {
     // Handles the case where the user was on a different tab, received a notification,
@@ -51,9 +67,10 @@ const NotificationComponent = () => {
     };
   }, []);
 
-  const handleAddNotification = () => {
+  const handleAddNotification = (notification) => {
     // This is to mimic receiving a notification from the backend
-    setNotifications([...notifications, "new notification"])
+    setNotifications(notification)
+    console.log(notification)
   }
 
   const requestNotificationPermission = useCallback(() => {
@@ -72,7 +89,9 @@ const NotificationComponent = () => {
 
   useEffect(() => {
     // Sends a notification - the type of notification depends on the visibility state of the document
-    if (notifications.length === 0) { return; }
+    if (Object.keys(notifications).length === 0) { return; }
+   
+
     if (document.hasFocus() && notificationRef.current) {
       // in tab notification
       notificationRef.current.click()
@@ -84,16 +103,33 @@ const NotificationComponent = () => {
   }, [notifications]);
 
   const acceptRideShare = () => {
-    if (detailsRef.current){detailsRef.current.click()}
-    
+    if (detailsRef.current) { detailsRef.current.click() }
+
   }
 
   const rejectRideShare = () => {
-    dummyData.rejected = false;
+    
   }
 
   const confirmRideShare = () => {
-    dummyData.rejected = true;
+    const ret = {
+      user_id: 1, // should be updated for the current user
+      departure_address: notifications.departure_address,
+      arrival_address: notifications.arrival_address,
+      leave_before: notifications.leave_before,
+      contact: contactRef.current.value
+    };
+    
+    try {
+      const sendNotification = async () => {
+        const response = await axiosInstance.put("/ridesharing/", ret);
+        console.log(response.data);
+      };
+      
+     sendNotification();
+    } catch (error) {
+      console.error("Error sending notification:", error);
+    }
   }
 
   const sendBrowserNotification = () => {
@@ -125,7 +161,7 @@ const NotificationComponent = () => {
         </DrawerTrigger>
         <DrawerContent>
           <DrawerHeader>
-            <DrawerTitle><p className="text-center">{dummyData.passenger} wants to ride share from {dummyData.departure} to {dummyData.destination}, leaving before {dummyData.departBefore}</p></DrawerTitle>
+            <DrawerTitle><p className="text-center">(HARDCODED NAME) wants to ride share from {notifications.departure_address} to {notifications.arrival_address}, leaving before {notifications.leave_before}</p></DrawerTitle>
             <DrawerDescription><p className="text-center">This action cannot be undone.</p></DrawerDescription>
           </DrawerHeader>
           <DrawerFooter>
@@ -147,7 +183,7 @@ const NotificationComponent = () => {
         </DrawerTrigger>
         <DrawerContent>
           <DrawerHeader>
-            <DrawerTitle><div className="grid md:grid-cols-2 "><p className="text-center px-3 py-2 ">Please enter your contact information</p><Input type="text" placeholder="Please provide your preferred method of communication"></Input></div></DrawerTitle>
+            <DrawerTitle><div className="grid md:grid-cols-2 "><p className="text-center px-3 py-2 ">Please enter your contact information</p><Input type="text" ref={contactRef} placeholder="Please provide your preferred method of communication"></Input></div></DrawerTitle>
 
           </DrawerHeader>
 
