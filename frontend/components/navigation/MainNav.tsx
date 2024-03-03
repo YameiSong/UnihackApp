@@ -13,7 +13,7 @@ const MainNav = ({
     >
       <Link
         href="/examples/dashboard"
-        className="text-sm font-medium transition-colors hover:text-primary"
+        className="text-lg text-white font-bold transition-colors hover:text-primary"
       >
         Home
       </Link>
