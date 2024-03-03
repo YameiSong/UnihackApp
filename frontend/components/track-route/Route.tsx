@@ -22,8 +22,8 @@ const Route = ({
       <span>{departureTime}</span>
       <span className="font-semibold">{departureAddress}</span>
       <MoveRight size={20} />
-      <div className="flex items-center justify-center rounded-full w-[18px] h-[18px] bg-rose-500 text-xs text-white">
-        L
+      <div className="flex items-center justify-center rounded-full w-[18px] h-[18px] bg-yellow-400 text-xs text-white">
+        T
       </div>
       <span>{arrivalTime}</span>
       <span className="font-semibold">{arrivalAddress}</span>

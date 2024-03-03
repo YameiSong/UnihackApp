@@ -16,23 +16,18 @@ import axiosInstance from "@/lib/axiosConfig";
 
 const suggestedRoutes = [
   {
-    departureTime: "8:00 AM",
-    departureAddress: "Townhall",
-    arrivalTime: "8:30 AM",
+    departureTime: "4:23 PM",
+    departureAddress: "Wynstart Station",
+    arrivalTime: "4:24 PM",
     arrivalAddress: "QVB",
   },
   {
-    departureTime: "8:00 AM",
-    departureAddress: "Townhall",
-    arrivalTime: "8:30 AM",
-    arrivalAddress: "QVB",
+    departureTime: "4:30 PM",
+    departureAddress: "Town Hall Station",
+    arrivalTime: "4:32 PM",
+    arrivalAddress: "Central Station",
   },
-  {
-    departureTime: "8:00 AM",
-    departureAddress: "Townhall",
-    arrivalTime: "8:30 AM",
-    arrivalAddress: "QVB",
-  },
+  
 ];
 
 const TrackRouteBoard = () => {
@@ -101,10 +96,10 @@ const TrackRouteBoard = () => {
               <CardContent className="flex flex-col items-start space-y-1 p-5">
                 <span className="text-xs font-[500]">From</span>
                 <span className="text-xl font-semibold text-black">
-                  Townhall
+                  Wynstart Station
                 </span>
                 <span className="text-xs font-[500]">To</span>
-                <span className="text-xl font-semibold text-black">QVB</span>
+                <span className="text-xl font-semibold text-black">Central Station</span>
               </CardContent>
             </Card>
           </div>
