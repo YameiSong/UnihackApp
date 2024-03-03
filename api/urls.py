@@ -7,5 +7,5 @@ urlpatterns = [
     path('travelplan/', views.handleTravelPlan, name="handle travel plan"),
     path('trip/', views.handleTrip, name="handle trip"),
     path('login/', views.handleLogin, name="handle log in"),
-    path('handleridesharing/', views.HandleRideShaing, name="handle ride shaing")
+    path('ridesharing/', views.HandleRideShaing, name="handle ride shaing")
 ]
