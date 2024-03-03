@@ -18,7 +18,7 @@ export default function DashboardPage() {
   return (
     <GlobalProvider>
       <div className="flex flex-col">
-        <div className="border-b">
+        <div className="border-b bg-teal-500">
           <div className="flex h-16 items-center px-4">
             <MainNav className="mx-6" />
             <div className="ml-auto flex items-center space-x-4">
