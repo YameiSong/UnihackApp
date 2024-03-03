@@ -1,10 +1,11 @@
 "use client";
 import React from "react";
 import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
+// import "react-calendar/dist/Calendar.css";
 import { useRef, useState } from "react";
 import { useGlobalContext } from "../providers/GlobalStateProvider";
 import ITag from "@/types/ITag";
+import './Calendar.css';
 
 import { format } from "date-fns";
 
@@ -101,6 +102,7 @@ const CalendarBoard = () => {
     dialogTriggerRef.current?.click();
     selectedDate = value;
   };
+
   return (
     <>
       <Dialog>
